@@ -160,6 +160,7 @@ services:
       - ALLOWEDIPS=0.0.0.0/0 #optional
       - PERSISTENTKEEPALIVE_PEERS= #optional
       - LOG_CONFS=true #optional
+      - NO_DELETE_DEFAULT=true #optional
     volumes:
       - /path/to/appdata/config:/config
       - /lib/modules:/lib/modules #optional
@@ -188,6 +189,7 @@ docker run -d \
   -e ALLOWEDIPS=0.0.0.0/0 `#optional` \
   -e PERSISTENTKEEPALIVE_PEERS= `#optional` \
   -e LOG_CONFS=true `#optional` \
+  -e NO_DELETE_DEFAULT=true `#optional` \
   -p 51820:51820/udp \
   -v /path/to/appdata/config:/config \
   -v /lib/modules:/lib/modules `#optional` \
@@ -214,6 +216,7 @@ Containers are configured using parameters passed at runtime (such as those abov
 | `-e ALLOWEDIPS=0.0.0.0/0` | The IPs/Ranges that the peers will be able to reach using the VPN connection. If not specified the default value is: '0.0.0.0/0, ::0/0' This will cause ALL traffic to route through the VPN, if you want split tunneling, set this to only the IPs you would like to use the tunnel AND the ip of the server's WG ip, such as 10.13.13.1. |
 | `-e PERSISTENTKEEPALIVE_PEERS=` | Set to `all` or a list of comma separated peers (ie. `1,4,laptop`) for the wireguard server to send keepalive packets to listed peers every 25 seconds. Useful if server is accessed via domain name and has dynamic IP. Used only in server mode. |
 | `-e LOG_CONFS=true` | Generated QR codes will be displayed in the docker log. Set to `false` to skip log output. |
+| `-e NO_DELETE_DEFAULT=true` | If initialization fails, do not delete the default route (deleting the default route is the default) |
 | `-v /config` | Contains all relevant configuration files. |
 | `-v /lib/modules` | Host kernel modules for situations where they're not already loaded. |
 | `--sysctl=` | Required for client mode. |
@@ -398,6 +401,7 @@ Once registered you can define the dockerfile to use with `-f Dockerfile.aarch64
 
 ## Versions
 
+* **23.11.23:** - New environment variable: NO_DELETE_DEFAULT - If this env is defined and is true, the default route will not be deleted if tunnels failed to go up.
 * **03.10.23:** - **Potentially Breaking Change:** Support for multiple interfaces added. Wireguard confs moved to `/config/wg_confs/`. Any file with a `.conf` extension in that folder will be treated as a live tunnel config and will be attempted to start. If any of the tunnels fail, all tunnels will be stopped. Tunnels are started in alphabetical order. Managed server conf will continue to be hardcoded to `wg0.conf`.
 * **28.06.23:** - Rebase master to Alpine 3.18 again.
 * **26.06.23:** - Revert master to Alpine 3.17, due to issue with openresolv.

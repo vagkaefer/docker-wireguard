@@ -15,7 +15,12 @@ done
 
 if [[ -z "${WG_CONFS}" ]]; then
     echo "**** No valid tunnel config found. Please create a valid config and restart the container ****"
-    ip route del default
+    if [[ -z "${NO_DELETE_DEFAULT}" || "${NO_DELETE_DEFAULT}" = "false" ]]; then
+        echo "**** Removing default route ****"
+        ip route del default
+    else
+        echo "**** Default route will not be deleted (NO_DELETE_DEFAULT=true) ****"
+    fi
     exit 0
 fi
 
@@ -41,6 +46,11 @@ else
             wg-quick down "${tunnel}" || :
         fi
     done
-    ip route del default
+    if [[ -z "${NO_DELETE_DEFAULT}" || "${NO_DELETE_DEFAULT}" = "false" ]]; then
+        echo "**** Removing default route ****"
+        ip route del default
+    else
+        echo "**** Default route will not be deleted (NO_DELETE_DEFAULT=true) ****"
+    fi
     echo "**** All tunnels are now down. Please fix the tunnel config ${FAILED} and restart the container ****"
 fi
